@@ -8,8 +8,10 @@ import { signOut } from '@/lib/auth';
 import clsx from 'clsx';
 import { usePathname } from 'next/navigation';
 import { AuthContext } from '@/contexts/auth.context';
+import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
+  const router = useRouter();
   const { user } = useContext(AuthContext);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -58,12 +60,13 @@ const Navbar = () => {
           {user ? (
             <>
               <button
+                onClick={() => router.push('/profile')}
                 className="bg-yellow-400 px-4 py-2 rounded-lg hover:bg-yellow-500 text-center text-sm md:text-base"
               >
-                {user.first_name}
+                {user.display_name}
               </button>
               <button
-                onClick={handleSignout}
+                onClick={() => {handleSignout(); router.push('/')}}
                 className="bg-red-500 px-4 text-white py-2 rounded-lg hover:bg-red-600 text-center text-sm md:text-base"
               >
                 Logout
@@ -114,14 +117,16 @@ const Navbar = () => {
   {user ? (
     <>
       <button
+        onClick={() => { setMenuOpen(false); router.push('/profile'); }}
         className="bg-yellow-400 px-4 py-2 rounded-lg hover:bg-yellow-500 text-center text-sm md:text-base"
       >
-        {user.first_name}
+        {user.display_name}
       </button>
       <button
         onClick={() => {
           handleSignout();
-          setMenuOpen(false); // Close menu on logout
+          setMenuOpen(false);
+          router.push('/') // Close menu on logout
         }}
         className="bg-red-500 px-4 py-2 mx-2 rounded-lg hover:bg-red-600 text-white text-center text-sm md:text-base"
       >

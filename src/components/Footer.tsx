@@ -7,7 +7,7 @@ import Tahubulatlogo from '@/components/TahuBulatLogo';
 const Footer = () => {
   return (
     <footer id='footer'
-      className={`${overlock.className} bg-yellow-400 text-white py-6`}
+      className={`${overlock.className} bg-yellow-400 text-black py-6`}
     >
       <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center space-y-4 md:space-y-0">
         {/* Logo */}

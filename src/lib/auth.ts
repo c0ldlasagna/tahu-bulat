@@ -7,7 +7,7 @@ const signUp = async(name:string,email:string,password:string) =>{
       password: password,
       options: {
         data: {
-          first_name: name,
+          display_name: name,
         }
       }
     }

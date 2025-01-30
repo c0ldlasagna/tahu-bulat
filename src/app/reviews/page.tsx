@@ -12,11 +12,12 @@ import { useContext } from 'react';
 const Reviews = () => {
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const {user} = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   interface Review {
     id: string;
     user_id: string;
     name: string;
+    profile_picture: string;
     rating: number;
     review: string;
   }
@@ -44,9 +45,8 @@ const Reviews = () => {
 
   // Handle form submission to add a new review
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log(user)
     e.preventDefault();
-    if (!user?.first_name || !user?.sub) {
+    if (!user?.sub) {
       alert('User information is missing. Please log in again.');
       return;
     }
@@ -57,14 +57,10 @@ const Reviews = () => {
     }
   
     try {
-      const { data, error } = await supabase.from('Reviews').insert([
-        {
-          user_id: user.sub,
-          name: user.first_name,
-          rating,
-          review,
-        },
-      ]).select();
+      const { data, error } = await supabase
+      .from('Reviews')
+      .insert([{user_id: user.sub,rating,review,},])
+      .select();
   
       if (error) {
         console.error('Error adding review:', error);
@@ -78,8 +74,7 @@ const Reviews = () => {
         setReview(''); // Clear the form
         setRating(1);
         setIsFormOpen(false);
-        alert('Review submitted successfully!');
-  
+        window.location.reload();
       }
     } catch (err) {
       console.error('Unexpected error:', err);
@@ -100,6 +95,7 @@ const Reviews = () => {
               name={review.name}
               rating={review.rating}
               comment={review.review}
+              profilePicture={review.profile_picture} // Added profile picture
             />
           ))
         ) : (
