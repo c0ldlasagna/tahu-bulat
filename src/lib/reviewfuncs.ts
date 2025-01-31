@@ -83,13 +83,13 @@ export async function fetchReviews() {
 
     if (userError) {
       console.error('Error fetching user data:', userError);
-      return { ...review, name: 'Unknown', profile_picture: '/default-avatar.png' };
+      return { ...review, name: 'Unknown', profile_picture: '/avatar_default.webp' };
     }
 
     return {
       ...review,
       name: userData.display_name || 'Unknown',
-      profile_picture: userData.profile_picture || '/default-avatar.png',
+      profile_picture: userData.profile_picture || '/avatar_default.webp',
     };
   }));
   const fakeReviews = await axios.get('https://randomuser.me/api/?results=10');

@@ -13,7 +13,6 @@ const Reviews = () => {
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { user } = useContext(AuthContext);
-  const [reviewCacheBuster] = useState(Date.now());
 
   interface Review {
     id: string;
@@ -36,6 +35,7 @@ const Reviews = () => {
         setIsLoading(true);
         const fetchedReviews = await fetchReviews();
         setReviews(fetchedReviews);
+        console.log('Fetched reviews:', fetchedReviews);
       } catch (error) {
         console.error('Error fetching reviews:', error);
       } finally {
@@ -129,7 +129,7 @@ const Reviews = () => {
                   name={review.name}
                   rating={review.rating}
                   comment={review.review}
-                  profilePicture={`${review.profile_picture}?download=true&t=${reviewCacheBuster}`}
+                  profilePicture={review.profile_picture}
                 />
               ))
             ) : (

@@ -1,5 +1,6 @@
 import { overlock } from "@/app/fonts";
 import Image from "next/image";
+import { useState } from "react";
 
 export default function ReviewCard({
   name,
@@ -12,12 +13,13 @@ export default function ReviewCard({
   comment: string;
   profilePicture: string;
 }) {
+  const [reviewCacheBuster] = useState(Date.now());
   return (
     <div className={`${overlock.className} bg-white rounded-lg shadow-md p-6`}>
       <div className="flex items-center mb-4">
         {/* Avatar */}
         <Image
-          src={profilePicture}
+          src={`${profilePicture}?download=true&t=${reviewCacheBuster}`}
           width={100}
           height={100}
           alt={`${name}'s profile`}
