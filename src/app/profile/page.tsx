@@ -84,6 +84,7 @@ export default function Profile() {
       }
     } finally {
       setUploading(false);
+      window.location.reload();
     }
   }
 
