@@ -12,8 +12,7 @@ export async function uploadAvatar(file: File) {
   if (userError || !user) throw new Error("User not authenticated");
 
   const userId = user.id;
-  const fileExt = file.name.split(".").pop();
-  const filePath = `${userId}/avatar.${fileExt}`;
+  const filePath = `${userId}/avatar`;
 
   // ✅ Upload with authentication
   const { error: uploadError } = await supabase.storage

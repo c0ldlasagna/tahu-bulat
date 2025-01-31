@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         hostname: 'cavlonkkogzqhrquwatk.supabase.co',
         pathname: "/storage/v1/object/public/avatars/**",
       },
+      {
+        protocol: "https",
+        hostname: 'randomuser.me',
+        pathname: "/api/portraits/**",
+      }
     ],
   },
   /* config options here */

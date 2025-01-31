@@ -13,6 +13,7 @@ const Reviews = () => {
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { user } = useContext(AuthContext);
+  const [reviewCacheBuster] = useState(Date.now());
 
   interface Review {
     id: string;
@@ -56,34 +57,59 @@ const Reviews = () => {
       alert('User information is missing. Please log in again.');
       return;
     }
-
+  
     if (!review.trim()) {
       alert('Review cannot be empty.');
       return;
     }
-
+  
     try {
       const { data, error } = await supabase
         .from('Reviews')
         .insert([{ user_id: user.sub, rating, review }])
         .select();
-
+  
       if (error) {
         console.error('Error adding review:', error);
         alert('Failed to add review.');
       } else if (data) {
         const newReview = data[0];
-        setReviews((prevReviews) => [newReview, ...prevReviews]);
+  
+        // Fetch the user's display_name and profile_picture from the 'users' table
+        const { data: profile, error: profileError } = await supabase
+          .from('users')
+          .select('display_name, profile_picture')
+          .eq('id', user.sub)
+          .single();
+  
+        if (profileError) {
+          console.error('Error fetching user profile:', profileError);
+          alert('Failed to retrieve user profile.');
+          return;
+        }
+  
+        // Update state with new review and user profile info
+        setReviews((prevReviews) => [
+          {
+            ...newReview,
+            name: profile.display_name, // Add display_name to review
+            profile_picture: profile.profile_picture, // Add profile_picture to review
+          },
+          ...prevReviews,
+        ]);
+  
+        // Reset review form
         setReview('');
         setRating(1);
         setIsFormOpen(false);
-        window.location.reload();
+        alert('Review added successfully!');
       }
     } catch (err) {
       console.error('Unexpected error:', err);
       alert('An unexpected error occurred.');
     }
   };
+  
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
@@ -103,7 +129,7 @@ const Reviews = () => {
                   name={review.name}
                   rating={review.rating}
                   comment={review.review}
-                  profilePicture={review.profile_picture}
+                  profilePicture={`${review.profile_picture}?download=true&t=${reviewCacheBuster}`}
                 />
               ))
             ) : (

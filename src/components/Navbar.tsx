@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
   const router = useRouter();
-  const { user } = useContext(AuthContext);
+  const {user,setUser} = useContext(AuthContext);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const links = [
@@ -24,7 +24,7 @@ const Navbar = () => {
 
   const handleSignout = async () => {
     await signOut();
-    window.location.reload();
+    setUser(null);
   };
 
   return pathname == '/signin' || pathname == '/signup' ? null : (
@@ -66,7 +66,7 @@ const Navbar = () => {
                 {user.display_name}
               </button>
               <button
-                onClick={() => {handleSignout(); router.push('/')}}
+                onClick={() => {handleSignout();}}
                 className="bg-red-500 px-4 text-white py-2 rounded-lg hover:bg-red-600 text-center text-sm md:text-base"
               >
                 Logout
@@ -125,8 +125,7 @@ const Navbar = () => {
       <button
         onClick={() => {
           handleSignout();
-          setMenuOpen(false);
-          router.push('/') // Close menu on logout
+          setMenuOpen(false); // Close menu on logout
         }}
         className="bg-red-500 px-4 py-2 mx-2 rounded-lg hover:bg-red-600 text-white text-center text-sm md:text-base"
       >

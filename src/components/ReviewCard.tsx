@@ -1,5 +1,5 @@
-/* eslint-disable @next/next/no-img-element */
 import { overlock } from "@/app/fonts";
+import Image from "next/image";
 
 export default function ReviewCard({
   name,
@@ -16,8 +16,10 @@ export default function ReviewCard({
     <div className={`${overlock.className} bg-white rounded-lg shadow-md p-6`}>
       <div className="flex items-center mb-4">
         {/* Avatar */}
-        <img
+        <Image
           src={profilePicture}
+          width={100}
+          height={100}
           alt={`${name}'s profile`}
           className="w-12 h-12 rounded-full mr-4"
         />

@@ -7,11 +7,15 @@ import { uploadAvatar } from "@/lib/avatar";
 import { fetchReviews } from "@/lib/reviewfuncs";
 import ReviewCard from "@/components/ReviewCard";
 import { AuthContext } from "@/contexts/auth.context";
+import Image from "next/image";
 
 export default function Profile() {
   const [image, setImage] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
+  const [cacheBuster, setCacheBuster] = useState(Date.now()); // Cache-busting timestamp for profile
+  const [reviewCacheBuster, setReviewCacheBuster] = useState(Date.now()); // Cache-busting for reviews
+
   interface Review {
     name: string;
     profile_picture: string;
@@ -21,7 +25,7 @@ export default function Profile() {
     review: string;
     created_at: string;
   }
-  
+
   const [reviews, setReviews] = useState<Review[]>([]);
   const { user } = useContext(AuthContext);
 
@@ -45,13 +49,20 @@ export default function Profile() {
     }
 
     if (data?.profile_picture) {
-      setImageUrl(data.profile_picture);
+      setImageUrl(`${data.profile_picture}?download=true&t=${cacheBuster}`);
     }
   }
 
   async function getUserReviews(userId: string) {
     const fetchedReviews = await fetchReviews();
-    setReviews(fetchedReviews.filter((review) => review.user_id === userId));
+    const updatedReviews = fetchedReviews
+      .filter((review) => review.user_id === userId)
+      .map((review) => ({
+        ...review,
+        profile_picture: `${review.profile_picture}?download=true&t=${reviewCacheBuster}`, // Cache-busting
+      }));
+
+    setReviews(updatedReviews);
   }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,7 +77,6 @@ export default function Profile() {
     setUploading(true);
     try {
       const publicUrl = await uploadAvatar(image);
-      setImageUrl(publicUrl);
 
       const { error: updateError } = await supabase
         .from("users")
@@ -76,6 +86,14 @@ export default function Profile() {
       if (updateError) {
         throw new Error("Error updating profile picture");
       }
+
+      // Update state dynamically
+      setImageUrl(`${publicUrl}?download=true&t=${Date.now()}`);
+      setCacheBuster(Date.now()); // Force profile picture update
+
+      // Refresh reviews to update profile pictures there too
+      setReviewCacheBuster(Date.now());
+      getUserReviews(user.sub);
     } catch (error) {
       if (error instanceof Error) {
         alert(error.message);
@@ -84,7 +102,6 @@ export default function Profile() {
       }
     } finally {
       setUploading(false);
-      window.location.reload();
     }
   }
 
@@ -93,11 +110,11 @@ export default function Profile() {
       <h2 className="text-2xl font-bold mb-4 text-center sm:text-left">Profile</h2>
 
       <div className="flex flex-col sm:flex-row text-center sm:text-left items-center bg-yellow-400 rounded-xl p-10">
-        <img
+        <Image
           src={imageUrl || "/avatar_default.webp"}
           alt="Profile Picture"
           width={100}
-          height={100}
+          height={100} // Prevent aggressive Next.js caching
           className="w-[100px] h-[100px] rounded-full sm:mr-4"
         />
         <div className="flex flex-col justify-items-start">
@@ -105,7 +122,7 @@ export default function Profile() {
         </div>
       </div>
 
-      <div className="my-4">
+      <div className="my-4 justify-between">
         <input type="file" accept="image/*" onChange={handleFileChange} />
         <button
           onClick={uploadImage}
@@ -125,7 +142,7 @@ export default function Profile() {
               name={review.name}
               rating={review.rating}
               comment={review.review}
-              profilePicture={review.profile_picture}
+              profilePicture={`${review.profile_picture}?download=true&t=${reviewCacheBuster}`} // Cache-busting for reviews
             />
           ))}
         </div>
