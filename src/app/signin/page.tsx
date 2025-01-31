@@ -18,7 +18,6 @@ export default function SignInPage() {
     setError('');
     try {
       const userObj = await signIn(email, password);
-      console.log(userObj);
       const username = userObj.user.user_metadata;
       setUser(username);
       router.push("/");

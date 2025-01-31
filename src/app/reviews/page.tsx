@@ -35,7 +35,6 @@ const Reviews = () => {
         setIsLoading(true);
         const fetchedReviews = await fetchReviews();
         setReviews(fetchedReviews);
-        console.log('Fetched reviews:', fetchedReviews);
       } catch (error) {
         console.error('Error fetching reviews:', error);
       } finally {
