@@ -1,8 +1,8 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import { useState, useEffect, useContext } from "react";
 import { supabase } from "@/lib/supabase";
 import { overlock } from "../fonts";
-import Image from "next/image";
 import { uploadAvatar } from "@/lib/avatar";
 import { fetchReviews } from "@/lib/reviewfuncs";
 import ReviewCard from "@/components/ReviewCard";
@@ -12,7 +12,17 @@ export default function Profile() {
   const [image, setImage] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
-  const [reviews, setReviews] = useState([]);
+  interface Review {
+    name: string;
+    profile_picture: string;
+    id: string;
+    user_id: string;
+    rating: number;
+    review: string;
+    created_at: string;
+  }
+  
+  const [reviews, setReviews] = useState<Review[]>([]);
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
@@ -67,7 +77,11 @@ export default function Profile() {
         throw new Error("Error updating profile picture");
       }
     } catch (error) {
-      alert(error.message);
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert("An unknown error occurred");
+      }
     } finally {
       setUploading(false);
     }
@@ -115,7 +129,7 @@ export default function Profile() {
           ))}
         </div>
       ) : (
-        <p className="text-gray-500">You haven't written any reviews yet.</p>
+        <p className="text-gray-500">You haven&apos;t written any reviews yet.</p>
       )}
     </div>
   );

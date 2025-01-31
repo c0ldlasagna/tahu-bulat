@@ -93,6 +93,7 @@ export async function fetchReviews() {
     };
   }));
   const fakeReviews = await axios.get('https://randomuser.me/api/?results=10');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const fakeReviewsData = fakeReviews.data.results.map((review: any) => {
     const rating = Math.floor(Math.random() * 5) + 1;
     return {
